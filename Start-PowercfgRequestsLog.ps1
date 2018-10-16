@@ -49,8 +49,6 @@ begin {
     }
 }
 process {
-    # TODO, some way to properly end this? maybe a datetime input for how long to run for?
-    # Maybe an activity to look for to stop? lock file removed that's checked for every min or something?
     While ($stopwatch.Elapsed.Minutes -le $Runtime) {
         $ToReturn = '' | Select-Object DATETIME, DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
         $Index = ''| Select-Object DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
