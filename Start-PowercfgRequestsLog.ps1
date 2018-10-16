@@ -63,7 +63,7 @@ begin {
     }
 }
 process {
-    While ($Stopwatch.Elapsed.Minutes -le $Runtime) {
+    while ($Stopwatch.Elapsed.Minutes -le $Runtime) {
         $ToReturn = '' | Select-Object -Property DATETIME, DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
         $Index = ''| Select-Object -Property DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
 
@@ -81,7 +81,7 @@ process {
         $Index.ACTIVELOCKSCREEN = $PowerCFG.IndexOf('ACTIVELOCKSCREEN:')
 
 
-        Switch ($true) {
+        switch ($true) {
             ($PowerCFG[$Index.DISPLAY + 1] -ne 'None.') {
                 [int] $a = $Index.DISPLAY + 1
                 [int] $b = $Index.SYSTEM - 1
@@ -122,9 +122,9 @@ process {
             $null -ne $ToReturn.PERFBOOST -or
             $null -ne $ToReturn.ACTIVELOCKSCREEN
         ) {
-            $ToReturn.DATETIME = $(get-date)
+            $ToReturn.DATETIME = $(Get-Date)
 
-            Write-Output $ToReturn
+            Write-Output -InputObject $ToReturn
         }
     }
 }
