@@ -4,17 +4,33 @@
     Must be run in an elevated console
 .DESCRIPTION
     Wrapper for powercfg to monitor requests for a set period of time and at a set interval
-    Converts the results of "powercfg -requests" into an object and adds them to the $Global:Output variable
+    Converts the results of "powercfg /requests" into an object to return to the output stream
 .EXAMPLE
     PS C:\> Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 10
+    DATETIME         : 17/10/2018 00:11:15
+    DISPLAY          : {[PROCESS] \Device\HarddiskVolume7\Users\username\AppData\Local\Google\Chrome\Application\AnApplication.exe,
+                        Requested By SomeApp, }
+    SYSTEM           : {[DRIVER] Legacy Kernel Caller, }
+    AWAYMODE         :
+    EXECUTION        :
+    PERFBOOST        :
+    ACTIVELOCKSCREEN :
+
 
     Description
     -----------
-    Runs for 10 minutes at an interval of every 500 milliseconds
+    Runs for 10 minutes at an interval of every 500 milliseconds directly to console
+.EXAMPLE
+    PS C:\> $Results = Start-PowercfgRequestsLog.ps1 -Delay 1 -Runtime 10
+
+
+    Description
+    -----------
+    Runs for 10 minutes at an interval of every 1 millisecond
     Once completed, you can get a quick idea of the processes recorded with the below:
 
     # Foreach property that is not DateTime, print title and sort results, filtered to exclude blank entries
-    $Global:Output[0].psobject.Properties.name.where{$_ -ne 'DateTime'} | % {Write-Host $_ -f Cyan; $Output.$_ | where {$_ -ne ''} | Sort-Object -Unique}
+    $Results[0].psobject.Properties.name.where{$_ -ne 'DateTime'} | % {Write-Host $_ -f Cyan; $Results.$_ | where {$_ -ne ''} | Sort-Object -Unique}
 .NOTES
     https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options
 #>
@@ -34,28 +50,26 @@ param (
     [int] $Runtime = 5
 )
 begin {
-    $Global:Output = New-Object -TypeName 'System.Collections.Generic.List[object]'
+    $Stopwatch =  [system.diagnostics.stopwatch]::StartNew()
 
-    $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-
-    If ($Runtime -eq 0) {
-        # Reset $stopwatch to ensure While check always returns true. "0 -le 0"
-        $stopwatch.stop()
-        $stopwatch.reset()
+    if ($Runtime -eq 0) {
+        # Reset $Stopwatch to ensure While check always returns true. "0 -le 0"
+        $Stopwatch.stop()
+        $Stopwatch.reset()
     } else {
-        # Due to using "$stopwatch.Elapsed.Minutes -le $Runtime" for the While check, a 5min timer will technically run up to the 6min mark
+        # Due to using "$Stopwatch.Elapsed.Minutes -le $Runtime" for the While check, a 5min timer will technically run up to the 6min mark
         # Remove 1 minute from $runtime to bring the end run to last up the expected completion time
         $Runtime--
     }
 }
 process {
-    While ($stopwatch.Elapsed.Minutes -le $Runtime) {
-        $ToReturn = '' | Select-Object DATETIME, DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
-        $Index = ''| Select-Object DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
+    While ($Stopwatch.Elapsed.Minutes -le $Runtime) {
+        $ToReturn = '' | Select-Object -Property DATETIME, DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
+        $Index = ''| Select-Object -Property DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
 
         Start-Sleep -Milliseconds $Delay
 
-        $PowerCFG = powercfg -requests
+        $PowerCFG = powercfg /requests
 
         # Due to how powercfg outputs the results, there's no consistent index position for each section
         # Re-indexing the index IDs for each section is necessary to allow accurate selection of the results for each section
@@ -99,7 +113,7 @@ process {
                 $ToReturn.ACTIVELOCKSCREEN = $PowerCFG[$a..$b]
             }
         }
-        If (
+        if (
             # No need to output results for every loop, only those with any result
             $null -ne $ToReturn.DISPLAY -or
             $null -ne $ToReturn.SYSTEM -or
@@ -109,13 +123,13 @@ process {
             $null -ne $ToReturn.ACTIVELOCKSCREEN
         ) {
             $ToReturn.DATETIME = $(get-date)
-            $Output.Add($ToReturn)
+
+            Write-Output $ToReturn
         }
     }
 }
 end {
-    If ($stopwatch.IsRunning) {
-        $stopwatch.Stop()
+    if ($Stopwatch.IsRunning) {
+        $Stopwatch.Stop()
     }
-    write-host ('$Global:Output count: {0}' -f $Global:Output.count)
 }
