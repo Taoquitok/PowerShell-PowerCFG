@@ -8,7 +8,7 @@
 .EXAMPLE
     PS C:\> Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 10
     DATETIME         : 17/10/2018 00:11:15
-    DISPLAY          : {[PROCESS] \Device\HarddiskVolume7\Users\username\AppData\Local\Google\Chrome\Application\AnApplication.exe,
+    DISPLAY          : {[PROCESS] \Device\HarddiskVolume7\Users\username\AppData\Local\Google\Chrome\Application\Chrome.exe,
                         Requested By SomeApp, }
     SYSTEM           : {[DRIVER] Legacy Kernel Caller, }
     AWAYMODE         :
