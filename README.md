@@ -1,7 +1,7 @@
 # PowerShell-PowerCFG
 PowerShell powercfg wrapper for logging application and driver power requests
 
-Brief script to wrap the snapshot results of `powercfg -requests` and convert it into a method of monitoring application and driver power requests for use in debugging.
+Brief script to wrap the snapshot results of `powercfg /requests` and convert it into a method of monitoring application and driver power requests for use in debugging.
 
 ## Background
 
