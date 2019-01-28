@@ -6,7 +6,7 @@
     Wrapper for powercfg to monitor requests for a set period of time and at a set interval
     Converts the results of "powercfg /requests" into an object to return to the output stream
 .EXAMPLE
-    PS C:\> Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 10
+    PS C:\> .\Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 10
     DATETIME         : 17/10/2018 00:11:15
     DISPLAY          : {[PROCESS] \Device\HarddiskVolume7\Users\username\AppData\Local\Google\Chrome\Application\Chrome.exe,
                         Requested By SomeApp, }
@@ -21,7 +21,7 @@
     -----------
     Runs for 10 minutes at an interval of every 500 milliseconds directly to console
 .EXAMPLE
-    PS C:\> $Results = Start-PowercfgRequestsLog.ps1 -Delay 1 -Runtime 10
+    PS C:\> $Results = .\Start-PowercfgRequestsLog.ps1 -Delay 1 -Runtime 10
 
 
     Description
@@ -50,7 +50,7 @@ param (
     [int] $Runtime = 5
 )
 begin {
-    $Stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+    $Stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
     if ($Runtime -eq 0) {
         # Reset $Stopwatch to ensure While check always returns true. "0 -le 0"
