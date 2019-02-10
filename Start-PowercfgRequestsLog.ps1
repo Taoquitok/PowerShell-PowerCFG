@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
     Wrapper for powercfg to monitor requests for a set period of time and at a set interval
-    Must be run in an elevated console
+    Must be RunAsAdministrator
 .DESCRIPTION
     Wrapper for powercfg to monitor requests for a set period of time and at a set interval
     Converts the results of "powercfg /requests" into an object to return to the output stream
 .EXAMPLE
-    PS C:\> .\Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 10
+    PS C:\> .\Start-PowercfgRequestsLog.ps1 -Delay 500 -Runtime 600
     DATETIME         : 17/10/2018 00:11:15
     DISPLAY          : {[PROCESS] \Device\HarddiskVolume7\Users\username\AppData\Local\Google\Chrome\Application\Chrome.exe,
                         Requested By SomeApp, }
@@ -19,14 +19,14 @@
 
     Description
     -----------
-    Runs for 10 minutes at an interval of every 500 milliseconds directly to console
+    Runs for 600 seconds (10 minutes)  at an interval of every 500 milliseconds directly to console
 .EXAMPLE
     PS C:\> $Results = .\Start-PowercfgRequestsLog.ps1 -Delay 1 -Runtime 10
 
 
     Description
     -----------
-    Runs for 10 minutes at an interval of every 1 millisecond
+    Runs for 10 seconds at an interval of every 1 millisecond
     Once completed, you can get a quick idea of the processes recorded with the below:
 
     # Foreach property that is not DateTime, print title and sort results, filtered to exclude blank entries
@@ -38,16 +38,16 @@
 #Requires -RunAsAdministrator
 param (
     # Millisecond delay to wait between running powercfg
-    # Defaults to 100 ms
+    # Defaults to 100 milliseconds
     # Parameter help description
     [Parameter(
         Position=0)]
     [int] $Delay = 100,
     # Runtime until function will finish. Set to 0 to never end, instead requiring you to manually cancel it
-    # Defaults to 5 minutes
+    # Defaults to 300 seconds (5 minutes)
     [Parameter(
         Position=1)]
-    [int] $Runtime = 5
+    [int] $Runtime = 300
 )
 begin {
     $Stopwatch = [system.diagnostics.stopwatch]::StartNew()
@@ -57,13 +57,13 @@ begin {
         $Stopwatch.stop()
         $Stopwatch.reset()
     } else {
-        # Due to using "$Stopwatch.Elapsed.Minutes -le $Runtime" for the While check, a 5min timer will technically run up to the 6min mark
+        # Due to using "$Stopwatch.Elapsed.Seconds -le $Runtime" for the While check, a 5min timer will technically run up to the 6min mark
         # Remove 1 minute from $runtime to bring the end run to last up the expected completion time
         $Runtime--
     }
 }
 process {
-    while ($Stopwatch.Elapsed.Minutes -le $Runtime) {
+    while ($Stopwatch.Elapsed.Seconds -le $Runtime) {
         $ToReturn = '' | Select-Object -Property DATETIME, DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
         $Index = ''| Select-Object -Property DISPLAY, SYSTEM, AWAYMODE, EXECUTION, PERFBOOST, ACTIVELOCKSCREEN
 
