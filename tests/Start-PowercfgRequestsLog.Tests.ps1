@@ -70,7 +70,7 @@ Describe  $ValidationDescription {
 }
 <#
 Test notes:
-# Covered 77.55% of 49 analyzed Commands in 1 File.
+# Covered 83.67% of 49 analyzed Commands in 1 File.
 # Missed commands:
 
 # File                          Function Line Command
