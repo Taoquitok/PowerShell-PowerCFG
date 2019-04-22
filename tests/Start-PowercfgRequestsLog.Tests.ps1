@@ -70,7 +70,7 @@ Describe  $ValidationDescription {
 }
 <#
 Test notes:
-# Covered 83.67% of 49 analyzed Commands in 1 File.
+# Covered 77.55% of 49 analyzed Commands in 1 File.
 # Missed commands:
 
 # File                          Function Line Command
@@ -87,7 +87,7 @@ Test notes:
 # Start-PowercfgRequestsLog.ps1           112 [int] $b = $PowerCFG.count - 1
 # Start-PowercfgRequestsLog.ps1           113 $ToReturn.ACTIVELOCKSCREEN = $PowerCFG[$a..$b]
 
-Missing tests for:
+Missing explicit tests for:
 $Runtime = 0 infinite loop (would be difficult to test...)
 EXECUTION, PERFBOOST, and ACTIVELOCKSCREEN, results. No idea how to emulate these. Happy with 3/4 code coverage
 #>
